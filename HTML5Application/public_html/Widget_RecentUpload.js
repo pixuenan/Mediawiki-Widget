@@ -22,20 +22,19 @@
 
         #scrollDiv{
         font: 17px bold;
-        font - family:"Times New Roman", Times, serif;
-        background - color: #eee;
+        font-family:"Times New Roman", Times, serif;
+        background-color: #eee;
         top:240px;
         width: 100 % ;
         height: 110px;
-        line - height: 25px;
-//border: #ccc 1px solid;  
+        line-height: 25px;
         overflow: hidden;
-        - moz - border - radius: 8px;
-        - webkit - border - radius: 8px;
-        border - radius: 8px;
-        - moz - box - shadow: 0px 0px 2px #000000;
-        - webkit - box - shadow: 0px 0px 2px #000000;
-        box - shadow: 0px 0px 2px #000000;
+        -moz-border-radius: 8px;
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+        -moz-box-shadow: 0px 0px 2px #000000;
+        -webkit-box-shadow: 0px 0px 2px #000000;
+        box-shadow: 0px 0px 2px #000000;
         margin: 5px;
         padding: 5px;
         }
