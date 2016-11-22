@@ -67,58 +67,74 @@
         var recent_change_number = 0;
         var recent_change_object = json.query.recentchanges;
         var index = 0;
-        var find_register_upload = false;
         var keys_array = Object.keys(recent_change_object);
         while (index < keys_array.length && recent_change_number < 5){
             var key = keys_array[index];
             var value = recent_change_object[key];
-            if (value.ns == 0){
-                var user = value.user;
+            var user = value.user;
+            
+            //detect upload from register user
+            if (value.ns === 0 && value.type === "edit" && value.user !== "FactsSysop"){
+                
                 var date = parseDateOrTimevalue(value.timestamp)[0];
                 var timevalue = parseDateOrTimevalue(value.timestamp)[1];
-                //detect upload from register user
-                if (value.type == "edit"){
 
-                //check the following 5 elements to see if there is a "new" upload from sysop with time difference less than 10s (1/360 h)
-                    var index_s = index + 1;
-                    var limit = index_s + 5;
-                    for (index_s; index_s <= limit && index_s < keys_array.length; index_s++){
-                        var key_s = keys_array[index_s];
-                        var element = recent_change_object[key_s];
-                        if (element.type == "new" && element.title == value.title){
-                            var ele_date = parseDateOrTimevalue(element.timestamp)[0];
-                            var ele_timevalue = parseDateOrTimevalue(element.timestamp)[1];
-                            if (Math.abs(ele_timevalue - timevalue) <= 1 / 360 && element.user == "FactsSysop") {
-                                find_register_upload = true;
-                                break;
-                        }
+                //check the following 5 elements to see if there is a "new" upload from sysop or a modifation to the ACL page with time difference less than 10s (1/360 h)
+                var index_s = index + 1;
+                var limit = index_s + 5;
+                var find_register_upload = false;
+                for (index_s; index_s <= limit && index_s < keys_array.length; index_s++){
+                    var key_s = keys_array[index_s];
+                    var element = recent_change_object[key_s];
+                    var ele_date = parseDateOrTimevalue(element.timestamp)[0];
+                    var ele_timevalue = parseDateOrTimevalue(element.timestamp)[1];
+                    if (Math.abs(ele_timevalue - timevalue) <= 1 / 360 
+                        && element.user === "FactsSysop" 
+                        && ele_date === date
+                        && element.type === "new"
+                        && element.title === 'ACL:Page/' + value.title){                            
+                        find_register_upload = true;
+                        break;                        
                     }
                 }
                 if (find_register_upload){
-                    index = index_s;
-                    find_register_upload = false;
+                    var next_key = keys_array[index_s+1];
+                    var next_value = recent_change_object[next_key];
+                    var next_date = parseDateOrTimevalue(next_value.timestamp)[0];
+                    var next_timevalue = parseDateOrTimevalue(next_value.timestamp)[1];
+                    
+                    // if this is the first time upload from the registered user, detect the upload from FactSysop for this upload
+                    if (Math.abs(next_timevalue - timevalue) <= 1 / 360
+                        && next_value.user === "FactsSysop" 
+                        && next_date === date
+                        && next_value.type === "new"
+                        && next_value.title === value.title) {
+                        index = index_s + 1;
+                    } else {
+                        index = index_s;
+                    }
+                    
                     var wikipage_link = "http://factpub.org/wiki/index.php/" + value.title.split(" ").join("_");
                     list_string.push ("<li>" + user + " uploads the paper: " + "<a href=" + wikipage_link + ">" + value.title + "</a>" + " at " + date + "</li>");
-                    recent_change_number += 1;
+                    recent_change_number ++;
                 }
             }
 
             //upload from sysop   
-            if (value.type == "new" && user == "FactsSysop"){
+            else if (value.type === "new" && user === "FactsSysop" && value.ns === 0){
 
                 user = "Anonymous";
                 var wikipage_link = "http://factpub.org/wiki/index.php/" + value.title.split(" ").join("_");
                 list_string.push ("<li>" + user + " uploads the paper: " + "<a href=" + wikipage_link + ">" + value.title + "</a>" + " at " + date + "</li>");
-                recent_change_number += 1;
+                recent_change_number ++;
             }
+            index++;
         }
-        index++;
-    }
 
-    list_string.push("</ul>"); 
-    var list_final_string = list_string.join("");
+        list_string.push("</ul>"); 
+        var list_final_string = list_string.join("");
 
-    document.getElementById(divid).innerHTML = list_final_string;
+        document.getElementById(divid).innerHTML = list_final_string;
     })
 
     document.head.innerHTML += "<link href='http://fonts.googleapis.com/css?family=Oswald:400,300' rel='stylesheet'>";
@@ -135,7 +151,7 @@
         var count = $("div.btn-group.btn-block").length;
         //comment out this line to edit the main page
         $("div.btn-group.btn-block:nth-child(1)").hide();
-        if (count == 3) {
+        if (count === 3) {
             $("div.btn-group.btn-block:nth-child(2)").hide();
             $("div.btn-group.btn-block:nth-child(3)").hide();
         }
