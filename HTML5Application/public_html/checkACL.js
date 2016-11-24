@@ -33,15 +33,31 @@ function checkACLEditRight (username,data){
 }
 
 var api = new mw.Api();
-api.login("ForACLCheck","passwordmeannothing");
+//check if the user is login or not
 api.get({
     action: 'query',
-    prop: 'revisions',
-    rvprop: 'content',
-    format: 'json',
-    titles: 'ACL:Page/SHANK1 Deletions in Males with Autism Spectrum Disorder. Sato,D',
+    meta: 'tokens',
 }).done( function ( data ) {
-    checkACLEditRight ('username',data)
+    console.log(data.query.tokens.csrftoken,data.query.tokens.csrftoken==="+\\");
+    if (data.query.tokens.csrftoken === "+\\"){
+        api.login("ForACLCheck","passwordmeannothing");
+    }
+
+    //check ACL page content
+    api.get({
+        action: 'query',
+        prop: 'revisions',
+        rvprop: 'content',
+        format: 'json',
+        titles: 'ACL:Page/SHANK1 Deletions in Males with Autism Spectrum Disorder. Sato,D',
+    }).done( function ( data ) {
+        checkACLEditRight ('username',data);    
+    });
 });
+
+//logout
+setTimeout ( function(){
+$.getJSON('http://factpub.org/wiki/api.php?action=logout',{//});
+},9000);
 </script>
 </includeonly>
