@@ -19,13 +19,29 @@ $.ajax({
     }
 });
 
+function checkACLEditRight (username,data){
+       
+        var pageId = Object.keys(data.query.pages);
+        var userCanEdit = false;
+        if (data.query.pages[pageId].revisions) {
+            var accessPermission = data.query.pages[pageId].revisions[0]["*"];
+            console.log(accessPermission);
+            var editString = "#access: assigned to = User:" + username + " | actions = edit";
+            userCanEdit = (accessPermission.indexOf(editString) > -1);
+        }        
+        return userCanEdit;   
+}
+
 var api = new mw.Api();
 api.login("ForACLCheck","passwordmeannothing");
-api.get( {
+api.get({
     action: 'query',
-    meta: 'userinfo'
+    prop: 'revisions',
+    rvprop: 'content',
+    format: 'json',
+    titles: 'ACL:Page/SHANK1 Deletions in Males with Autism Spectrum Disorder. Sato,D',
 }).done( function ( data ) {
-    console.log( data );
+    checkACLEditRight ('username',data)
 });
 </script>
 </includeonly>
