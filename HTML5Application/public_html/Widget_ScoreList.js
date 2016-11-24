@@ -73,7 +73,7 @@ function getPageTitles(username,nextTimeStamp){
     });
 }
 
-function checkACLEditRight (username,pageTitle,data){
+function checkACLEditRight (username,data){
        
         var pageId = Object.keys(data.query.pages);
         var userCanEdit = false;
