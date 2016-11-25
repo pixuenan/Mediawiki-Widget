@@ -6,37 +6,48 @@
 
 <includeonly>
     <script type="text/javascript">
-
-    var divid = "<!--{$divid}-->";
-
+    
+function creatModalButton (id, name) {
+    var color = "btn-success";
     var node = document.createElement("LI"); 
-    var node_collapse = document.createElement("LI"); 
-
     var a = document.createElement('A');
-    var linkText = document.createTextNode("   Add Factify to Chrome   ");
+    var linkText = document.createTextNode(name);
     a.appendChild(linkText);
-    a.className = "btn btn-success btn-md active";
+    a.className = "btn "+ color +" btn-md active";
     a.style.color = "white";
-    a.id = "n-Launch-modal";
+    a.id = id;
     node.appendChild(a);
-    console.log(node);
+    return node;
+}
 
-    var a_collapse = document.createElement('A');
-    var linkText_collapse = document.createTextNode("   Add Factify to Chrome   ");
-    a_collapse.appendChild(linkText_collapse);
-    a_collapse.className = "btn btn-success btn-md active";
-    a_collapse.style.color = "white";
-    a_collapse.id = "collapse-Launch-modal";
-    node_collapse.appendChild(a_collapse);
-    console.log(node_collapse);
+function creatLinkButton (name, href) {
+    var color = "btn-warning";
+    var node = document.createElement("LI"); 
+    var a = document.createElement('A');
+    var linkText = document.createTextNode(name);
+    a.appendChild(linkText);
+    a.className = "btn "+ color +" btn-md active";
+    a.style.color = "white";
+    a.href = href;
+    node.appendChild(a);
+    return node;
+}
 
-    var navbar = document.getElementById(divid);
+
+    var modalButton = creatModalButton ("n-Launch-modal", "   Upload via Chrome   ");
+    var modalButton_collapse = creatModalButton ("collapse-n-Launch-modal", "   Upload via Chrome   ");
+    var linkButton = creatLinkButton ("Upload via Java", "http://factpub.org/wiki/index.php/Factify_a_pdf_paper");
+    var linkButton_collapse = creatLinkButton ("Upload via Java", "http://factpub.org/wiki/index.php/Factify_a_pdf_paper");
+
+    var navbar = document.getElementById("navbar");
     var userButton = navbar.getElementsByTagName('ul')[2];
-    userButton.insertBefore(node, userButton.childNodes[0]);
+    userButton.insertBefore(modalButton, userButton.childNodes[0]);
+    userButton.insertBefore(linkButton, userButton.childNodes[0]);
 
     var navheader = document.getElementsByClassName("navbar-header")[0];
     var userButton_collaspe = navheader.getElementsByTagName('ul')[1];
-    userButton_collaspe.insertBefore(node_collapse, userButton_collaspe.childNodes[0]);
+    userButton_collaspe.insertBefore(modalButton_collapse, userButton_collaspe.childNodes[0]);
+    userButton_collaspe.insertBefore(linkButton_collapse, userButton_collaspe.childNodes[0]);
 
     $(document).ready(function(){
         $("#n-Launch-modal").attr('data-toggle', 'modal');
