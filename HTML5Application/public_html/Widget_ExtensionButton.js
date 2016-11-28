@@ -52,8 +52,8 @@ function creatLinkButton (name, href) {
     $(document).ready(function(){
         $("#n-Launch-modal").attr('data-toggle', 'modal');
         $("#n-Launch-modal").attr('data-target', '#ExtensionModal');
-        $("#collapse-Launch-modal").attr('data-toggle', 'modal');
-        $("#collapse-Launch-modal").attr('data-target', '#ExtensionModal');
+        $("#collapse-n-Launch-modal").attr('data-toggle', 'modal');
+        $("#collapse-n-Launch-modal").attr('data-target', '#ExtensionModal');
     })
 
     </script>
