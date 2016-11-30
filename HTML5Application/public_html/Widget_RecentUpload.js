@@ -19,7 +19,7 @@
         padding:0;
         word-wrap: break-word;
         }
-
+        
         #scrollDiv{
         font: 17px bold;
         font-family:"Times New Roman", Times, serif;
@@ -63,7 +63,9 @@
     
     function pushLiString(list_string, value, user, date){
         var wikipage_link = "http://factpub.org/wiki/index.php/" + value.title.split(" ").join("_");
-        list_string.push ("<li>" + user + " uploads the paper: " + "<a href=" + wikipage_link + ">" + value.title + "</a>" + " at " + date + "</li>");
+        var linktrack = ;
+        var liststring = user + ' uploads the paper: ' + '<a href=' + wikipage_link + ' onclick="ga(\'send\', \'event\', \'link\', \'click\', \'RecentUpload\', 2, false);">' + value.title + '</a>' + ' at ' + date;
+        list_string.push ("<li>" + liststring + "</li>");
     }
     
     function checkFactsSysopUpload(timevalue1, date1, value2){
