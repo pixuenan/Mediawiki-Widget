@@ -20,43 +20,44 @@ function creatModalButton (id, name) {
     return node;
 }
 
-function creatLinkButton (name, href) {
-    var color = "btn-warning";
-    var node = document.createElement("LI"); 
-    var a = document.createElement('A');
-    var linkText = document.createTextNode(name);
-    a.appendChild(linkText);
-    a.className = "btn "+ color +" btn-md active";
-    a.style.color = "white";
-    a.href = href;
-    node.appendChild(a);
-    return node;
-}
+    var divid = "<!--{$divid}-->";
 
+    var modalButton = creatModalButton ("install-button", "   Upload via Chrome   ");
+    var modalButton_collapse = creatModalButton ("collapse-install-button", "   Upload via Chrome   ");
 
-    var modalButton = creatModalButton ("n-Launch-modal", "   Upload via Chrome   ");
-    var modalButton_collapse = creatModalButton ("collapse-n-Launch-modal", "   Upload via Chrome   ");
-    var linkButton = creatLinkButton ("Upload via Java", "http://factpub.org/wiki/index.php/Factify_a_pdf_paper");
-    var linkButton_collapse = creatLinkButton ("Upload via Java", "http://factpub.org/wiki/index.php/Factify_a_pdf_paper");
-
-    var navbar = document.getElementById("navbar");
+    var navbar = document.getElementById(divid);
     var userButton = navbar.getElementsByTagName('ul')[2];
     userButton.insertBefore(modalButton, userButton.childNodes[0]);
-    userButton.insertBefore(linkButton, userButton.childNodes[0]);
 
     var navheader = document.getElementsByClassName("navbar-header")[0];
     var userButton_collaspe = navheader.getElementsByTagName('ul')[1];
     userButton_collaspe.insertBefore(modalButton_collapse, userButton_collaspe.childNodes[0]);
-    userButton_collaspe.insertBefore(linkButton_collapse, userButton_collaspe.childNodes[0]);
+
+    document.head.innerHTML += '<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/fglknmfclpjhnhncpiklllajkpelgeie">';
 
     $(document).ready(function(){
-        $("#n-Launch-modal").attr('data-toggle', 'modal');
-        $("#n-Launch-modal").attr('data-target', '#ExtensionModal');
-        $("#collapse-n-Launch-modal").attr('data-toggle', 'modal');
-        $("#collapse-n-Launch-modal").attr('data-target', '#ExtensionModal');
+        $("#install-button, #collapse-install-button").click(function(){
+                
+                              // Track the button
+                              ga('send', 'event', 'button', 'click', 'ChromeExtension', 30, false);
+
+                              //console.log("the button was clicked");
+                              var isChrome = !!window.chrome && !!window.chrome.webstore;
+                              if(!isChrome){
+                                alert("Please use Chrome Browser to install Chrome Extension.");
+                              }else{
+                
+                                //console.log("Installation start...");
+                                var url = "https://chrome.google.com/webstore/detail/fglknmfclpjhnhncpiklllajkpelgeie";
+                                chrome.webstore.install(url, function(){console.log("success!")}, function(){console.log("failed to install Chrome Extension.")});
+         
+                              }
+                
+                            });
     })
 
     </script>
 </includeonly>
+
 
 
