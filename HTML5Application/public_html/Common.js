@@ -16,7 +16,7 @@
 // Add the scoreboard button to every page
 
 function scoreboardTrack(){
-     ga('send', 'event', 'scoreboard', 'click', 'ranking', 10, false);
+     ga('send', 'event', 'button', 'click', 'scoreboard', 10, false);
 }
 
 function creatLinkButton (name, href) {
