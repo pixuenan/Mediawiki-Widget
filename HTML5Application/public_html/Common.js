@@ -4,7 +4,21 @@
  * and open the template in the editor.
  */
 
-// Highlight the score board link in the navigation bar
+// Let Google Analytics follow every page
+ (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', '', 'auto');
+  ga('send', 'pageview');
+
+// Add the scoreboard button to every page
+
+function scoreboardTrack(){
+     ga('send', 'event', 'scoreboard', 'click', 'ranking', 10, false);
+}
+
 function creatLinkButton (name, href) {
     var color = "btn-info";
     var node = document.createElement("LI"); 
@@ -14,18 +28,14 @@ function creatLinkButton (name, href) {
     a.className = "btn "+ color +" btn-md active";
     a.style.color = "white";
     a.href = href;
+    a.onclick = scoreboardTrack;
     node.appendChild(a);
     return node;
 }
 
-var linkButton = creatLinkButton ("Score Board", "http://factpub.org/wiki/index.php/Score_Board");
-var linkButton_collapse = creatLinkButton ("Score Board", "http://factpub.org/wiki/index.php/Score_Board");
+var linkButton = creatLinkButton ("Scoreboard", "http://factpub.org/wiki/index.php/Scoreboard");
+var linkButton_collapse = creatLinkButton ("Scoreboard", "http://factpub.org/wiki/index.php/Scoreboard");
 
 var navbar = document.getElementById("navbar");
 var userButton = navbar.getElementsByTagName('ul')[2];
 userButton.insertBefore(linkButton, userButton.childNodes[0]);
-
-var navheader = document.getElementsByClassName("navbar-header")[0];
-var userButton_collaspe = navheader.getElementsByTagName('ul')[1];
-userButton_collaspe.insertBefore(linkButton_collapse, userButton_collaspe.childNodes[0]);
-
