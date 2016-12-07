@@ -1,0 +1,102 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Dec 7, 2016, 5:29:46 PM
+    Author     : pix1
+*/
+
+/* CSS placed here will be applied to all skins */
+div:empty{
+        display: none;
+}
+
+#toc .tocnumber { display: none; }
+
+/* remove Toolbox */
+#p-tb { display:none !important; }
+
+@media (max-width: 1450px) {
+
+         .sidebar-wrapper {
+                top:50px;
+                left:0px;
+                margin-top:10px;
+                position:relative;
+                height:100px;
+                display:inline-block;
+        }
+        
+        .sidebar-wrapper.sidebar-right-wrapper {
+                position:absolute;
+        }
+
+        #sidebar-right {
+                width:20%;
+                float:right;
+        }
+
+        #sidebar .dropdown-menu {
+                position:static;
+        }
+        #sidebar #toctitle, #sidebar #tweekiTOC {
+                display:none;
+        }
+
+        #tweekiTOC{
+               width:100%;
+               height:180px;
+               display: inline-block;
+        }
+
+        #tweekiTOC:empty{
+                display: none;
+         }
+}
+
+@media (min-width: 1300px) {
+        .navbar-header>.navbar-right{
+                display:none;
+        }
+}
+
+@media (max-width: 1300px) {
+        .navbar-fixed-top, .navbar-fixed-bottom {
+                        margin-left: 0 !important;
+                        margin-right: 0 !important;
+        }
+        .navbar-fixed-top .pull-left, .navbar-fixed-bottom .pull-left,
+        .navbar-fixed-top .pull-right, .navbar-fixed-bottom .pull-right {
+                float:none;
+        }
+
+        /*modified to show the navbar-right properly when the navbar is collapsed*/
+        .navbar-right{
+                float:right;
+        }
+
+        ul.navbar-right>li{
+                display:inline-block;
+        }
+
+        .navbar-form{
+                margin-top: 0;
+                margin-bottom: 0;
+                margin-left: 5px;
+                margin-right: 5px;
+                border-style: none;
+                padding: 0;
+        }
+
+        .form-group{
+                margin-top:9px;
+                margin-bottom:11px;
+        }
+
+        .navbar-collapse>.navbar-right{
+                display:none;
+        }
+
+}
