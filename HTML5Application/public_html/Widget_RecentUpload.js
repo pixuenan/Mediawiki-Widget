@@ -49,103 +49,52 @@
     </style>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
     <script type="text/javascript">
 
     var divid = "<!--{$divid}-->";
 
+    d3.text("test.log",function(dataset){
+        data = dataset.slice(0,-1).split("\n");
+        joinedJSONData = "{\"list\":[" + data.join(",") + "]}";
+	var parsedData = $.parseJSON(joinedJSONData);
+	RecentUploadList(parsedData);	
+//	console.log(parsedData);
+        });
+	
+    document.head.innerHTML += "<link href='http://fonts.googleapis.com/css?family=Oswald:400,300' rel='stylesheet'>";
+
     function parseDateAndTimevalue(timestamp){
-        var t_posi = timestamp.indexOf('T');
+        var t_posi = timestamp.indexOf('UTC');
         var date = timestamp.slice(0, t_posi);
-        var time = timestamp.slice(t_posi + 1, timestamp.length - 1);
-        var timevalue = 1 * parseInt(time.slice(0, 2)) + 1 / 60 * parseInt(time.slice(3, 5)) + 1 / 3600 * parseInt(time.slice(6, 8));
-        return [date, timevalue];
+        return date;
     }
     
-    function pushLiString(list_string, value, user, date){
-        var wikipage_link = "http://factpub.org/wiki/index.php/" + value.title.split(" ").join("_");
-        var linktrack = ;
-        var liststring = user + ' uploads the paper: ' + '<a href=' + wikipage_link + ' onclick="ga(\'send\', \'event\', \'link\', \'click\', \'RecentUpload\', 2, false);">' + value.title + '</a>' + ' at ' + date;
+    function pushLiString(list_string, upload){
+        var username = upload.username;
+        var pagetitle = upload.pagetitle;
+        var date = parseDateAndTimevalue(upload.timestamp);
+        var wikipage_link = "http://factpub.org/wiki/index.php/" + pagetitle.split(" ").join("_");
+        var liststring = username + ' uploads the paper: ' + '<a href=' + wikipage_link + ' onclick="ga(\'send\', \'event\', \'link\', \'click\', \'RecentUpload\', 2, false);">' + pagetitle + '</a>' + ' at ' + date;
         list_string.push ("<li>" + liststring + "</li>");
     }
     
-    function checkFactsSysopUpload(timevalue1, date1, value2){
-        //Check if there is a "new" upload from sysop with time difference less than 10s (1/360 h)
-        var upload = false;
-        var date2 = parseDateAndTimevalue(value2.timestamp)[0];
-        var timevalue2 = parseDateAndTimevalue(value2.timestamp)[1];
-        if (Math.abs(timevalue2 - timevalue1) <= 1 / 360
-            && value2.user === "FactsSysop" 
-            && date2 === date1
-            && value2.type === "new"){
-            upload = true;
-        }
-        return upload;
-    }
-
-    $.getJSON("http://factpub.org/wiki/api.php?action=query&list=recentchanges&rcprop=title|user|timestamp&rctype=new|edit&rclimit=100&format=json", function (json){
+    function RecentUploadList (json){
 
         var list_string = ["<ul>"];
-        var recent_change_number = 0;
-        var recent_change_object = json.query.recentchanges;
+        var recent_upload_list = json.list;
         var index = 0;
-        var keys_array = Object.keys(recent_change_object);
-        while (index < keys_array.length && recent_change_number < 5){
-            var key = keys_array[index];
-            var value = recent_change_object[key];
-                       
-            if (value.ns === 0) {
-                var user = value.user;
-                var date = parseDateAndTimevalue(value.timestamp)[0];
-                var timevalue = parseDateAndTimevalue(value.timestamp)[1];
-                
-                //detect upload from register user
-                if (value.type === "edit" && value.user !== "FactsSysop"){
-                
-                    //check the previous change to see if it is a modifiction to the correspond ACL page
-                    var find_register_upload = false;  
-                    var key_s = keys_array[index+1];
-                    var element = recent_change_object[key_s];
-                    if (checkFactsSysopUpload(timevalue, date, element)                       
-                        && element.title === 'ACL:Page/' + value.title){                            
-                        find_register_upload = true;                     
-                    }
-                    
-                    if (find_register_upload){
-
-                        var next_key = keys_array[index+2];
-                        var next_value = recent_change_object[next_key];
-                    
-                        // if this is the first time upload from the registered user, detect the upload from FactSysop for this upload
-                        // to avoid adding the sysop upload as a recent upload from FactsSysop
-                        if (checkFactsSysopUpload(timevalue, date, next_value)
-                            && next_value.title === value.title) {
-                            index = index + 2;
-                        } else {
-                            index = index + 1;
-                        }
-                        
-                        pushLiString(list_string, value, user, date);                       
-                        recent_change_number ++;
-                    }
-                }
-
-                //upload from sysop   
-                else if (value.type === "new" && user === "FactsSysop") {
-
-                    user = "Anonymous";
-                    pushLiString(list_string, value, user, date);                    
-                    recent_change_number ++;
-                }
-            }
+        while (index < recent_upload_list.length && index < 5){
+            var upload = recent_upload_list[index];
+            pushLiString(list_string, upload);                       
             index++;
         }
 
         list_string.push("</ul>"); 
 
         document.getElementById(divid).innerHTML = list_string.join("");
-    })
+    }
 
-    document.head.innerHTML += "<link href='http://fonts.googleapis.com/css?family=Oswald:400,300' rel='stylesheet'>";
 
     function AutoScroll(obj) {
 
