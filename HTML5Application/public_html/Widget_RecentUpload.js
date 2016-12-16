@@ -53,16 +53,36 @@
     <script type="text/javascript">
 
     var divid = "<!--{$divid}-->";
+    var today = new Date();
+    var utcYearMonth = today.toJSON().slice(0,7);
+    var preMonth = new Date(today.setMonth(today.getMonth() - 1));
+    var utcYearPreMonth = preMonth.toJSON().slice(0,7);
 
-    d3.text("test.log",function(dataset){
-        data = dataset.slice(0,-1).split("\n");
-        joinedJSONData = "{\"list\":[" + data.join(",") + "]}";
-	var parsedData = $.parseJSON(joinedJSONData);
-	RecentUploadList(parsedData);	
-//	console.log(parsedData);
-        });
+	var logFile = "http://factpub.org/public/record/" + utcYearMonth + "-upload.log";
+	var logFilePreMonth = "http://factpub.org/public/record/" + utcYearPreMonth + "-upload.log";
+
+	function readLogFile (logFile) {
+		d3.text(logFile,function(dataset){
+
+			if (!dataset) {
+				console.log('not existed: ' + logFile);
+				readLogFile (logFilePreMonth);
+			}
+			else {
+				var data = dataset.split("\n");
+				data.reverse();
 	
-    document.head.innerHTML += "<link href='http://fonts.googleapis.com/css?family=Oswald:400,300' rel='stylesheet'>";
+				var joinedJSONData = "{\"list\":[" + data.slice(1,data.length).join(",") + "]}";
+				console.log(joinedJSONData);
+				var parsedData = $.parseJSON(joinedJSONData);
+				RecentUploadList(parsedData);	
+//		console.log(parsedData);
+			}
+		});
+	}
+//	
+	readLogFile (logFile);
+	document.head.innerHTML += "<link href='http://fonts.googleapis.com/css?family=Oswald:400,300' rel='stylesheet'>";
 
     function parseDateAndTimevalue(timestamp){
         var t_posi = timestamp.indexOf('UTC');
