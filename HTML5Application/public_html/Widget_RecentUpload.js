@@ -52,92 +52,105 @@
     <script src="https://d3js.org/d3.v4.js"></script>
     <script type="text/javascript">
 
-    var divid = "<!--{$divid}-->";
-    var today = new Date();
-    var utcYearMonth = today.toJSON().slice(0,7);
-    var preMonth = new Date(today.setMonth(today.getMonth() - 1));
-    var utcYearPreMonth = preMonth.toJSON().slice(0,7);
+	var divid = "<!--{$divid}-->";
+	var today = new Date();
+	var utcYearMonth = today.toJSON().slice(0,7);
+	var preMonth = new Date(today.setMonth(today.getMonth() - 1));
+	var utcYearPreMonth = preMonth.toJSON().slice(0,7);
 
 	var logFile = "http://factpub.org/public/record/" + utcYearMonth + "-upload.log";
 	var logFilePreMonth = "http://factpub.org/public/record/" + utcYearPreMonth + "-upload.log";
-
-	function readLogFile (logFile) {
-		d3.text(logFile,function(dataset){
-
-			if (!dataset) {
-				console.log('not existed: ' + logFile);
-				readLogFile (logFilePreMonth);
-			}
-			else {
-				var data = dataset.split("\n");
-				data.reverse();
-	
-				var joinedJSONData = "{\"list\":[" + data.slice(1,data.length).join(",") + "]}";
-				console.log(joinedJSONData);
-				var parsedData = $.parseJSON(joinedJSONData);
-				RecentUploadList(parsedData);	
-//		console.log(parsedData);
-			}
-		});
+        
+	function readLogFile (logFile,month) {
+		if (month === 'current') {
+			d3.text(logFile,function(dataset){
+				if (!dataset) {
+					console.log('Not existed: ' + logFile);
+					readLogFile (logFilePreMonth,'previous')
+				}
+				else {
+					generateRecentUpload(dataset);
+				}
+			});
+		}
+		else if (month === 'previous') {
+			d3.text(logFile ,function(dataset){
+				if (!dataset) {
+					console.log('Not existed: ' + logFile);
+				}
+				else {
+					generateRecentUpload(dataset);
+				}
+			});
+		}
+		
 	}
 //	
-	readLogFile (logFile);
-	document.head.innerHTML += "<link href='http://fonts.googleapis.com/css?family=Oswald:400,300' rel='stylesheet'>";
+	function generateRecentUpload (dataset) {
+		var data = dataset.split("\n");
+		data.reverse();
+	
+		var joinedJSONData = "{\"list\":[" + data.slice(1,data.length).join(",") + "]}";
+		var parsedData = $.parseJSON(joinedJSONData);
+		RecentUploadList(parsedData);	
+	}
 
-    function parseDateAndTimevalue(timestamp){
-        var t_posi = timestamp.indexOf('UTC');
-        var date = timestamp.slice(0, t_posi);
-        return date;
-    }
+	readLogFile (logFile, 'current');
+
+	function parseDateAndTimevalue(timestamp){
+		var t_posi = timestamp.indexOf('UTC');
+	        var date = timestamp.slice(0, t_posi);
+		return date;
+	    }
     
-    function pushLiString(list_string, upload){
-        var username = upload.username;
-        var pagetitle = upload.pagetitle;
-        var date = parseDateAndTimevalue(upload.timestamp);
-        var wikipage_link = "http://factpub.org/wiki/index.php/" + pagetitle.split(" ").join("_");
-        var liststring = username + ' uploads the paper: ' + '<a href=' + wikipage_link + ' onclick="ga(\'send\', \'event\', \'link\', \'click\', \'RecentUpload\', 2, false);">' + pagetitle + '</a>' + ' at ' + date;
-        list_string.push ("<li>" + liststring + "</li>");
-    }
+	function pushLiString(list_string, upload){
+		var username = upload.username;
+		var pagetitle = upload.pagetitle;
+	        var date = parseDateAndTimevalue(upload.timestamp);
+	        var wikipage_link = "http://factpub.org/wiki/index.php/" + pagetitle.split(" ").join("_");
+	        var liststring = username + ' uploads the paper: ' + '<a href=' + wikipage_link + ' onclick="ga(\'send\', \'event\', \'link\', \'click\', \'RecentUpload\', 2, false);">' + pagetitle + '</a>' + ' at ' + date;
+	        list_string.push ("<li>" + liststring + "</li>");
+	}
     
-    function RecentUploadList (json){
+	function RecentUploadList (json){
 
-        var list_string = ["<ul>"];
-        var recent_upload_list = json.list;
-        var index = 0;
-        while (index < recent_upload_list.length && index < 5){
-            var upload = recent_upload_list[index];
-            pushLiString(list_string, upload);                       
-            index++;
-        }
+	        var list_string = ["<ul>"];
+	        var recent_upload_list = json.list;
+  	        var index = 0;
+	        while (index < recent_upload_list.length && index < 5){
+			var upload = recent_upload_list[index];
+			pushLiString(list_string, upload);                       
+			index++;
+		}
 
-        list_string.push("</ul>"); 
+		list_string.push("</ul>"); 
 
-        document.getElementById(divid).innerHTML = list_string.join("");
-    }
+		document.getElementById(divid).innerHTML = list_string.join("");
+	}
 
 
-    function AutoScroll(obj) {
+	function AutoScroll(obj) {
 
-        $(obj).find("ul:first").animate({
-        marginTop:"-25px"},1000,function(){
-        $(this).css({marginTop:"0px"}).find("li:first").appendTo(this);
-        }); 
-    }
+		$(obj).find("ul:first").animate({
+			marginTop:"-25px"},1000,function(){
+				$(this).css({marginTop:"0px"}).find("li:first").appendTo(this);
+		}); 
+	}
 
-    function HiddenButtons(){
-        var count = $("div.btn-group.btn-block").length;
-        //comment out this line to edit the main page
-        $("div.btn-group.btn-block:nth-child(1)").hide();
-        if (count === 3) {
-            $("div.btn-group.btn-block:nth-child(2)").hide();
-            $("div.btn-group.btn-block:nth-child(3)").hide();
-        }
-    }
+	function HiddenButtons(){
+		var count = $("div.btn-group.btn-block").length;
+		//comment out this line to edit the main page
+		$("div.btn-group.btn-block:nth-child(1)").hide();
+		if (count === 3) {
+			$("div.btn-group.btn-block:nth-child(2)").hide();
+			$("div.btn-group.btn-block:nth-child(3)").hide();
+		}
+	}
 
-    $(document).ready(function(){ 
-        setInterval('AutoScroll("#scrollDiv")', 5000);
-        HiddenButtons();
-    })
+	$(document).ready(function(){ 
+		setInterval('AutoScroll("#scrollDiv")', 5000);
+		HiddenButtons();
+	})
     </script> 
 </includeonly>
 
